@@ -3,6 +3,7 @@ const BASE_URL = 'https://pixabay.com/api';
 const API_KEY = '33856079-07df6d61f1845998135abb1f8';
 
 export default class NewApi {
+  key = API_KEY;
   query;
   page = 1;
   per_page = 40;
@@ -12,7 +13,6 @@ export default class NewApi {
       this.query = query;
     }
     const params = {
-      key: API_KEY,
       q: this.query,
       image_type: 'photo',
       orientation: 'horizontal',
@@ -21,7 +21,9 @@ export default class NewApi {
       page: this.page,
     };
     try {
-      const response = await axios.get(`${BASE_URL}?`, { params: params });
+      const response = await axios.get(`${BASE_URL}/?key=${this.key}`, {
+        params: params,
+      });
       return response.data;
     } catch (error) {
       console.error(error);
