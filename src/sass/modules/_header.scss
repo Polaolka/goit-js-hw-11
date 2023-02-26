@@ -1,0 +1,28 @@
+.stripe {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #3f62c5,
+      #3f62c5 15px,
+      #629bf1 15px,
+      #629bf1 30px
+    );
+    padding: 10px;
+  }
+  .stripe-reverce {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-image: repeating-linear-gradient(
+      45deg,
+      #3f62c5,
+      #3f62c5 15px,
+      #629bf1 15px,
+      #629bf1 30px
+    );
+    padding: 15px;
+  }
+  
+  .wrapper {
+    display: flex;
+    justify-content: center;
+  }

@@ -1,0 +1,81 @@
+.knobs,
+.layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.button {
+  position: relative;
+  top: 50%;
+  width: 50px;
+  height: 25px;
+  margin: -12px auto 0;
+  overflow: hidden;
+}
+
+.button.r,
+.button.r .layer {
+  border-radius: 100px;
+}
+.button.b2 {
+  border-radius: 2px;
+}
+
+.checkbox {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.knobs {
+  z-index: 2;
+}
+
+.layer {
+  width: 100%;
+  background-color: rgba(250, 250, 250, 0.8);
+  transition: 0.3s ease all;
+  z-index: 1;
+}
+#button-3 .knobs:before {
+  content: "\2713";
+  width: 11px;
+  height: 1px;
+  color: #fff;
+  text-align: center;
+  background-color: #03a9f4;
+  border-radius: 50%;
+  padding: 8px 3px;
+  font-size: 7px;
+  font-weight: bold;
+  line-height: 0;
+  transition: all .3s, left .3s cubic-bezier(.18, .89, .35, 1.15);
+  position: absolute;
+  top: 4px;
+  left: 4px;
+}
+
+#button-3 .checkbox:active + .knobs:before {
+  width: 46px;
+  border-radius: 100px;
+}
+
+#button-3 .checkbox:checked:active + .knobs:before {
+  margin-left: -26px;
+}
+
+#button-3 .checkbox:checked + .knobs:before {
+  content: "\274C";
+  background-color: #cfcfcf;
+  left: 29px;
+  font-size: 7px;
+  line-height: 2px;
+}
