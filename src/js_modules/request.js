@@ -12,8 +12,8 @@ export default class NewApi {
       this.query = query;
     }
     const params = {
-      q: this.query,
       key: API_KEY,
+      q: this.query,
       image_type: 'photo',
       orientation: 'horizontal',
       safesearch: true,

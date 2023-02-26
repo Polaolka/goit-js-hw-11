@@ -14,7 +14,6 @@ const refs = {
 };
 
 const newsApi = new NewApi();
-
 let gallery = new SimpleLightbox('.gallery a', {
   captions: true,
   captionSelector: 'img',
@@ -45,7 +44,6 @@ function handleSubmit(e) {
     if (data.hits.length && !userChoice) {
       Notify.success(`Hooray! We found ${data.totalHits} images.`);
       showLoadMoreBox();
-      isActiveLoadMoreBtn();
     }
     if (data.hits.length && userChoice) {
       window.addEventListener('scroll', onWindowScroll);
@@ -56,8 +54,8 @@ function handleSubmit(e) {
         'Sorry, there are no images matching your search query. Please try again.'
       );
     }
-    countMaxPage(data);
     renderData(data.hits);
+    countMaxPage(data);
   });
   e.target.reset();
 }
@@ -80,7 +78,6 @@ function countMaxPage(data) {
 
 function isActiveLoadMoreBtn() {
   if (newsApi.page === newsApi.maxPage) {
-    console.log(newsApi.maxPage);
     Notify.warning(`I'm sorry, but this is the last page of results for your request`);
     refs.loadMoreBtn.disabled = true;
   } else refs.loadMoreBtn.disabled = false;

@@ -51,6 +51,5 @@
   
   input:focus-visible {
     outline-offset: 0px;
-    outline: none;
-    // outline: rgba(250, 250, 250, 0.8) solid 1px;
+    outline: transparent;
   }

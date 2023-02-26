@@ -1,5 +1,5 @@
 .container {
-  padding: 20px 15px;
+  padding: 20px 15px 80px 15px;
   margin: 0 auto;
   width: 100%;
 
@@ -15,7 +15,6 @@
     width: 1200px;
   }
 }
-
 
 .togler-text {
   margin-left: 15px;
@@ -65,10 +64,6 @@
     1px 4px 6px rgba(0, 0, 0, 0.16);
 }
 
-// .img-link {
-
-// }
-
 .img-prew {
   width: 100%;
   height: 200px;
@@ -110,4 +105,3 @@ p {
 	pointer-events: none;
 	transform: translatex(-100%) scale(0);
 }
-
