@@ -24,6 +24,7 @@ let gallery = new SimpleLightbox('.gallery a', {
   captionsData: 'title',
   animationSpeed: 300,
 });
+
 let userChoice = false;
 let isApiRequestActive = false;
 
@@ -67,13 +68,13 @@ function handleUserChoice(e) {
 function handleFocus() {
   refs.formEl.classList.add('js-focus');
 }
+
 function handleBlur() {
   refs.formEl.classList.remove('js-focus');
 }
 
 function countMaxPage(data) {
   newsApi.maxPage = Math.ceil(data.total / newsApi.per_page);
-  console.log(newsApi.maxPage);
 }
 
 function isActiveLoadMoreBtn() {
@@ -85,7 +86,6 @@ function isActiveLoadMoreBtn() {
 
 function handleLoadMoreClick(e) {
   newsApi.page += 1;
-  console.log(newsApi.page);
   newsApi.getCards().then(data => {
     renderData(data.hits);
   });
@@ -105,6 +105,7 @@ function hideLoadMoreBox() {
 function renderData(data) {
   const gallerycards = data.map(item => createCardsMarkup(item)).join('');
   refs.galleryEl.insertAdjacentHTML('beforeend', gallerycards);
+  gallery.refresh();
 }
 
 function onWindowScroll(e) {
@@ -132,11 +133,3 @@ function endOfScroll() {
   }, 500);
   window.removeEventListener('scroll', onWindowScroll);
 }
-// const { height: cardHeight } = document
-//   .querySelector(".gallery")
-//   .firstElementChild.getBoundingClientRect();
-
-// window.scrollBy({
-//   top: cardHeight * 10,
-//   behavior: "smooth",
-// });
