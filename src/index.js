@@ -45,6 +45,7 @@ function handleSubmit(e) {
     if (data.hits.length && !userChoice) {
       Notify.success(`Hooray! We found ${data.totalHits} images.`);
       showLoadMoreBox();
+      isActiveLoadMoreBtn();
     }
     if (data.hits.length && userChoice) {
       window.addEventListener('scroll', onWindowScroll);
@@ -81,7 +82,8 @@ function isActiveLoadMoreBtn() {
   if (newsApi.page === newsApi.maxPage) {
     Notify.warning(`I'm sorry, but this is the last page of results for your request`);
     refs.loadMoreBtn.disabled = true;
-  } else refs.loadMoreBtn.disabled = false;
+  } 
+  else refs.loadMoreBtn.disabled = false;
 }
 
 function handleLoadMoreClick(e) {
