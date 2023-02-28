@@ -105,3 +105,9 @@ p {
 	pointer-events: none;
 	transform: translatex(-100%) scale(0);
 }
+
+.observer {
+  height: 1px;
+  width: 100%;
+  background-color: transparent;
+}

@@ -3,6 +3,9 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { createCardsMarkup } from './js_modules/HTML_markup';
 import NewApi from './js_modules/request';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+AOS.init();
 
 const refs = {
   formEl: document.querySelector('.search-form'),
@@ -11,6 +14,7 @@ const refs = {
   loadMoreBtn: document.querySelector('.load-more-btn'),
   loadMoreBox: document.querySelector('.js-loadMoreBox'),
   checkboxEl: document.querySelector('.checkbox'),
+  observerEl: document.querySelector('.observer'),
 };
 
 const newsApi = new NewApi();
@@ -34,6 +38,16 @@ refs.inputEl.addEventListener('blur', handleBlur);
 refs.checkboxEl.addEventListener('change', handleUserChoice);
 refs.loadMoreBtn.addEventListener('click', handleLoadMoreClick);
 
+const observer = new IntersectionObserver((entries)=>{
+  // слідкуємо лише за одним елементом
+    const entry = entries[0];
+    if (entry.isIntersecting) {
+      if (newsApi.page === newsApi.maxPage) {endOfScroll(); return}
+  
+      if (!isApiRequestActive) progressOfScroll();
+    }
+  });
+
 function handleSubmit(e) {
   e.preventDefault();
   hideLoadMoreBox();
@@ -44,12 +58,13 @@ function handleSubmit(e) {
   newsApi.getCards(query).then(data => {
     if (data.hits.length && !userChoice) {
       Notify.success(`Hooray! We found ${data.totalHits} images.`);
+      observer.unobserve(refs.observerEl);
       showLoadMoreBox();
       isActiveLoadMoreBtn();
     }
     if (data.hits.length && userChoice) {
-      window.addEventListener('scroll', onWindowScroll);
       Notify.success(`Hooray! We found ${data.totalHits} images.`);
+      observer.observe(refs.observerEl);
     }
     if (!data.hits.length) {
       Notify.failure(
@@ -108,17 +123,7 @@ function renderData(data) {
   const gallerycards = data.map(item => createCardsMarkup(item)).join('');
   refs.galleryEl.insertAdjacentHTML('beforeend', gallerycards);
   gallery.refresh();
-}
-
-function onWindowScroll(e) {
-  const scrollHeight = e.target.documentElement.scrollHeight;
-  const scrollTop = e.target.documentElement.scrollTop;
-  const clientHeight = e.target.documentElement.clientHeight;
-  const position = scrollHeight - scrollTop - clientHeight;
-
-  if (newsApi.page === newsApi.maxPage) endOfScroll();
-
-  if (position < 500 && !isApiRequestActive) progressOfScroll();
+  AOS.refreshHard();
 }
 
 function progressOfScroll() {
@@ -129,9 +134,10 @@ function progressOfScroll() {
     isApiRequestActive = false;
   });
 }
+
 function endOfScroll() {
   setTimeout(() => {
     Notify.warning(`I'm sorry, but this is the last page of results for your request`);
   }, 500);
-  window.removeEventListener('scroll', onWindowScroll);
+  observer.unobserve(refs.observerEl);
 }
