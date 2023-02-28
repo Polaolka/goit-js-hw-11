@@ -38,43 +38,67 @@ refs.inputEl.addEventListener('blur', handleBlur);
 refs.checkboxEl.addEventListener('change', handleUserChoice);
 refs.loadMoreBtn.addEventListener('click', handleLoadMoreClick);
 
-const observer = new IntersectionObserver((entries)=>{
+const observer = new IntersectionObserver(entries => {
   // слідкуємо лише за одним елементом
-    const entry = entries[0];
-    if (entry.isIntersecting) {
-      if (newsApi.page === newsApi.maxPage) {endOfScroll(); return}
-  
-      if (!isApiRequestActive) progressOfScroll();
+  const entry = entries[0];
+  if (entry.isIntersecting) {
+    if (newsApi.page === newsApi.maxPage) {
+      endOfScroll();
+      return;
     }
-  });
+    if (!isApiRequestActive) progressOfScroll();
+  }
+});
 
-function handleSubmit(e) {
+async function handleSubmit(e) {
   e.preventDefault();
+  
+  clearGallery();
   hideLoadMoreBox();
+  setToFirstPage();
+
+  const searchQuery = formatQuery(refs.inputEl.value);
+  const data = await newsApi.getCards(searchQuery);
+  const images = data.hits;
+
+  initializeloading(data);
+  drawGallery(images);
+  setMaxPage(data);
+  clearForm();
+}
+
+function formatQuery(query) {
+  return query.trim();
+}
+
+function clearForm() {
+  refs.formEl.reset();
+}
+
+function clearGallery() {
   refs.galleryEl.innerHTML = '';
-  newsApi.page = 1;
-  const query = e.target.elements.searchQuery.value.trim();
-  newsApi.q = query;
-  newsApi.getCards(query).then(data => {
-    if (data.hits.length && !userChoice) {
-      Notify.success(`Hooray! We found ${data.totalHits} images.`);
-      observer.unobserve(refs.observerEl);
-      showLoadMoreBox();
-      isActiveLoadMoreBtn();
-    }
-    if (data.hits.length && userChoice) {
-      Notify.success(`Hooray! We found ${data.totalHits} images.`);
-      observer.observe(refs.observerEl);
-    }
-    if (!data.hits.length) {
-      Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
-    }
-    renderData(data.hits);
-    countMaxPage(data);
-  });
-  e.target.reset();
+}
+
+function initializeloading(data) {
+  if (data.hits.length && !userChoice) loadByButton(data);
+  if (data.hits.length && userChoice) loadByScroll(data);
+  if (!data.hits.length) {
+    Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  }
+}
+
+function loadByButton(data) {
+  Notify.success(`Hooray! We found ${data.totalHits} images.`);
+  observer.unobserve(refs.observerEl);
+  showLoadMoreBox();
+  isActiveLoadMoreBtn();
+}
+
+function loadByScroll(data) {
+  Notify.success(`Hooray! We found ${data.totalHits} images.`);
+  observer.observe(refs.observerEl);
 }
 
 function handleUserChoice(e) {
@@ -89,22 +113,27 @@ function handleBlur() {
   refs.formEl.classList.remove('js-focus');
 }
 
-function countMaxPage(data) {
+function setToFirstPage() {
+  newsApi.page = 1;
+}
+
+function setMaxPage(data) {
   newsApi.maxPage = Math.ceil(data.total / newsApi.per_page);
 }
 
 function isActiveLoadMoreBtn() {
   if (newsApi.page === newsApi.maxPage) {
-    Notify.warning(`I'm sorry, but this is the last page of results for your request`);
+    Notify.warning(
+      `I'm sorry, but this is the last page of results for your request`
+    );
     refs.loadMoreBtn.disabled = true;
-  } 
-  else refs.loadMoreBtn.disabled = false;
+  } else refs.loadMoreBtn.disabled = false;
 }
 
 function handleLoadMoreClick(e) {
   newsApi.page += 1;
   newsApi.getCards().then(data => {
-    renderData(data.hits);
+    drawGallery(data.hits);
   });
   isActiveLoadMoreBtn();
 }
@@ -119,7 +148,7 @@ function hideLoadMoreBox() {
   refs.loadMoreBox.classList.add('is-hidden');
 }
 
-function renderData(data) {
+function drawGallery(data) {
   const gallerycards = data.map(item => createCardsMarkup(item)).join('');
   refs.galleryEl.insertAdjacentHTML('beforeend', gallerycards);
   gallery.refresh();
@@ -139,16 +168,17 @@ function progressOfScroll() {
 
 function endOfScroll() {
   setTimeout(() => {
-    Notify.warning(`I'm sorry, but this is the last page of results for your request`);
+    Notify.warning(
+      `I'm sorry, but this is the last page of results for your request`
+    );
   }, 500);
   observer.unobserve(refs.observerEl);
 }
 
 function pageScrolling(el) {
-  const { height: cardHeight } = el
-  .firstElementChild.getBoundingClientRect();
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: "smooth",
-    });
+  const { height: cardHeight } = el.firstElementChild.getBoundingClientRect();
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 }
