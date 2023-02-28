@@ -1,11 +1,11 @@
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+
 import { createCardsMarkup } from './js_modules/HTML_markup';
 import NewApi from './js_modules/request';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-AOS.init();
 
 const refs = {
   formEl: document.querySelector('.search-form'),
@@ -123,6 +123,7 @@ function renderData(data) {
   const gallerycards = data.map(item => createCardsMarkup(item)).join('');
   refs.galleryEl.insertAdjacentHTML('beforeend', gallerycards);
   gallery.refresh();
+  AOS.init();
   AOS.refreshHard();
 }
 
@@ -132,6 +133,7 @@ function progressOfScroll() {
   newsApi.getCards().then(data => {
     renderData(data.hits);
     isApiRequestActive = false;
+    pageScrolling(refs.galleryEl);
   });
 }
 
@@ -140,4 +142,13 @@ function endOfScroll() {
     Notify.warning(`I'm sorry, but this is the last page of results for your request`);
   }, 500);
   observer.unobserve(refs.observerEl);
+}
+
+function pageScrolling(el) {
+  const { height: cardHeight } = el
+  .firstElementChild.getBoundingClientRect();
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: "smooth",
+    });
 }
