@@ -59,11 +59,12 @@ async function handleSubmit(e) {
 
   const searchQuery = formatQuery(refs.inputEl.value);
   const data = await newsApi.getCards(searchQuery);
-  const images = data.hits;
-
-  initializeloading(data);
-  drawGallery(images);
+  newsApi.query = searchQuery;
+  
   setMaxPage(data);
+  initializeloading(data);
+  drawGallery(data.hits);
+
   clearForm();
 }
 
@@ -130,11 +131,10 @@ function isActiveLoadMoreBtn() {
   } else refs.loadMoreBtn.disabled = false;
 }
 
-function handleLoadMoreClick(e) {
+async function handleLoadMoreClick(e) {
   newsApi.page += 1;
-  newsApi.getCards().then(data => {
-    drawGallery(data.hits);
-  });
+  const data = await newsApi.getCards();
+  drawGallery(data.hits);
   isActiveLoadMoreBtn();
 }
 
@@ -160,7 +160,7 @@ function progressOfScroll() {
   isApiRequestActive = true;
   newsApi.page += 1;
   newsApi.getCards().then(data => {
-    renderData(data.hits);
+    drawGallery(data.hits);
     isApiRequestActive = false;
     pageScrolling(refs.galleryEl);
   });
